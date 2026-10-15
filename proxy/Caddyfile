@@ -16,6 +16,7 @@
 }
 
 :{$PORT:8080} {
+	encode zstd gzip
 	# www -> apex
 	@www host www.biohackerwiki.com
 	redir @www https://biohackerwiki.com{uri} 301

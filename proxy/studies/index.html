@@ -15,12 +15,13 @@ table{width:100%;border-collapse:collapse;background:#fff}th,td{padding:7px 8px;
 th{background:var(--g);color:var(--c);cursor:pointer;user-select:none;position:sticky;top:0;font-weight:600}
 td.s{font-weight:700;color:var(--g);white-space:nowrap}.r{font-size:12px;color:#666}
 #pg{display:flex;gap:8px;align-items:center;margin:12px 0}button{padding:6px 12px;border:0;border-radius:6px;background:var(--g);color:var(--c);cursor:pointer}button:disabled{opacity:.4}
+td.fd{font-size:13px;max-width:360px}#stats{font-size:12px}
 @media(max-width:700px){.hm{display:none}}
 </style></head><body>
 <header><img src="logo.svg" alt=""><a href="/">Biohacking Wiki</a><span class="dot"></span><span>Study Browser</span></header>
 <main>
-<p class="disc">For information only, not medical advice. See the <a href="/s/about-the-wiki/doc/disclaimer-oi5wQnt98S">disclaimer</a>. How scores work: <a id="scoreLink" href="/s/about-the-wiki/doc/evidence-levels-EXcemtrrLh">Study Scores</a>.</p>
-<div id="sample">SAMPLE DATA: placeholder rows only, not real studies.</div>
+<p class="disc">For information only, not medical advice. See the <a href="/s/about-the-wiki/doc/disclaimer-oi5wQnt98S">disclaimer</a>. How scores work: <a id="scoreLink" href="/s/about-the-wiki/doc/study-scores-JB8uyQtefc">Study Scores</a>.</p>
+<p id="def" class="disc"></p><p id="stats" class="disc"></p>
 <div class="f">
 <input id="q" type="search" placeholder="Search title, author, journal, finding…">
 <select id="topic"><option value="">All topics</option></select>
@@ -31,16 +32,16 @@ td.s{font-weight:700;color:var(--g);white-space:nowrap}.r{font-size:12px;color:#
 <select id="sort"><option value="score">Sort: score</option><option value="year">Sort: year</option><option value="n">Sort: sample size</option><option value="title">Sort: title</option></select>
 </div>
 <div id="meta"></div>
-<table><thead><tr><th data-k="score">Score</th><th data-k="title">Study</th><th data-k="topic" class="hm">Topic</th><th data-k="design" class="hm">Design</th><th data-k="n" class="hm">n</th><th data-k="year">Year</th><th data-k="finding">Finding</th></tr></thead><tbody id="tb"></tbody></table>
+<table><thead><tr><th data-k="score">Score</th><th data-k="title">Study</th><th data-k="topic" class="hm">Topic</th><th data-k="design" class="hm">Design</th><th data-k="n" class="hm">Size</th><th data-k="year">Year</th><th data-k="finding">Finding</th></tr></thead><tbody id="tb"></tbody></table>
 <div id="pg"><button id="prev">Prev</button><span id="pi"></span><button id="next">Next</button></div>
 </main>
 <script>
 const PER=100,$=id=>document.getElementById(id),F=['q','topic','design','finding','min','from','to','sort'];
 let all=[],rows=[],page=0,dir=-1;
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-async function load(){let r=await fetch('studies.json',{cache:'no-cache'}),sample=false;
- if(!r.ok){r=await fetch('studies.sample.json');sample=true}
- all=await r.json();if(sample)$('sample').style.display='block';
+let D={};async function load(){$('meta').textContent='Loading studies…';D=await (await fetch('studies.json',{cache:'no-cache'})).json();all=D.studies;
+ $('def').textContent='Included: '+(D.definition||'')+(D.generated?' Updated '+D.generated+'.':'');
+ all.forEach(s=>{s.year=+s.year||null;s.n=s.n==null?null:+s.n});
  all.forEach(s=>s._t=[s.title,s.first_author,s.journal,s.topic,s.design,s.finding,s.score_reason,s.pmid].join(' ').toLowerCase());
  for(const k of['topic','design','finding'])[...new Set(all.map(s=>s[k]).filter(Boolean))].sort().forEach(v=>$(k).add(new Option(v,v)));
  const p=new URLSearchParams(location.search);F.forEach(k=>{if(p.has(k))$(k).value=p.get(k)});if(p.has('dir'))dir=+p.get('dir');page=+(p.get('page')||1)-1;
@@ -50,10 +51,11 @@ function apply(reset=true){if(reset)page=0;const v=Object.fromEntries(F.map(k=>[
  rows=all.filter(s=>(!v.topic||s.topic==v.topic)&&(!v.design||s.design==v.design)&&(!v.finding||s.finding==v.finding)&&(+s.score||0)>=min&&(+s.year||0)>=from&&(+s.year||0)<=to&&terms.every(t=>s._t.includes(t)));
  const k=v.sort;rows.sort((a,b)=>{const x=a[k],y=b[k];return (typeof x=='number'&&typeof y=='number'?x-y:String(x??'').localeCompare(String(y??'')))*dir});
  const p=new URLSearchParams();F.forEach(k=>{if(v[k]&&!(k=='sort'&&v[k]=='score'))p.set(k,v[k])});if(dir!=-1)p.set('dir',dir);if(page)p.set('page',page+1);
+ const st=D.stats||{},sk=v.topic?[v.topic]:Object.keys(st);$('stats').textContent=(v.topic?'':'Per topic: ')+sk.map(k=>st[k]?`${k}: ${st[k].found.toLocaleString()} found, ${st[k].listed.toLocaleString()} listed`:'').filter(Boolean).join(' · ');
  history.replaceState(null,'',location.pathname+(p+''?'?'+p:''));render()}
 function render(){const pages=Math.max(1,Math.ceil(rows.length/PER));page=Math.min(page,pages-1);
  $('tb').innerHTML=rows.slice(page*PER,page*PER+PER).map(s=>{const link=s.url||(s.pmid?'https://pubmed.ncbi.nlm.nih.gov/'+s.pmid+'/':'');
- return `<tr><td class="s" title="${esc(s.score_reason)}">${esc(s.score)}/5</td><td>${link?`<a href="${esc(link)}" target="_blank" rel="noopener">${esc(s.title)}</a>`:esc(s.title)}<div class="r">${esc(s.first_author)} · ${esc(s.journal)}${s.pmid?' · PMID '+esc(s.pmid):''}</div>${s.score_reason?`<div class="r">${esc(s.score_reason)}</div>`:''}</td><td class="hm">${esc(s.topic)}</td><td class="hm">${esc(s.design)}</td><td class="hm">${esc(s.n)}</td><td>${esc(s.year)}</td><td>${esc(s.finding)}</td></tr>`}).join('');
+ return `<tr><td class="s" title="${esc(s.score_reason)}">${esc(s.score)}/5</td><td>${link?`<a href="${esc(link)}" target="_blank" rel="noopener">${esc(s.title)}</a>`:esc(s.title)}<div class="r">${esc(s.first_author)} · ${esc(s.journal)}${s.pmid?' · PMID '+esc(s.pmid):''}</div>${s.score_reason?`<div class="r">Score basis: ${esc(s.score_reason)}</div>`:''}</td><td class="hm">${esc(s.topic)}</td><td class="hm">${esc(s.design)}</td><td class="hm">${esc(s.design_n||s.n)}</td><td>${esc(s.year)}</td><td class="fd">${esc(s.finding)}</td></tr>`}).join('');
  $('meta').textContent=`${rows.length.toLocaleString()} of ${all.length.toLocaleString()} studies`;$('pi').textContent=`Page ${page+1} of ${pages}`;$('prev').disabled=page==0;$('next').disabled=page>=pages-1}
 let t;$('q').oninput=()=>{clearTimeout(t);t=setTimeout(apply,120)};F.slice(1).forEach(k=>$(k).onchange=()=>apply());
 document.querySelectorAll('th').forEach(th=>th.onclick=()=>{const k=th.dataset.k;if($('sort').querySelector(`option[value=${k}]`)){if($('sort').value==k)dir=-dir;else{ $('sort').value=k;dir=-1}}else{dir=-dir}apply()});
