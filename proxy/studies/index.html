@@ -22,7 +22,7 @@ a:hover{color:#efe0bd;text-decoration-color:currentColor}
 .f select{appearance:none;-webkit-appearance:none;padding-right:30px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236b6b6b' fill='none' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center}
 .f input:focus,.f select:focus{border-color:#45454b}
 .f input::placeholder{color:var(--faint)}
-#q{flex:1 1 100%}.f input[type=number]{width:96px}
+#q{flex:1 1 100%}.f select{max-width:100%;min-width:0}#finding{width:220px}.f input[type=number]{width:96px}
 #meta{font-size:12.5px;color:var(--faint);margin:0 0 6px}
 #stats{font-size:12.5px}
 table{width:100%;border-collapse:collapse;font-size:14px;line-height:1.5}
@@ -38,7 +38,7 @@ td.hm{color:var(--mute);font-size:13px}
 #pg{display:flex;gap:10px;align-items:center;margin:20px 0;font-size:13px;color:var(--mute)}
 button{height:32px;padding:0 14px;border:1px solid var(--line2);border-radius:8px;background:var(--bg2);color:var(--ink);font:inherit;font-size:13px;cursor:pointer}
 button:hover{border-color:#45454b}button:disabled{opacity:.35;cursor:default}
-@media(max-width:700px){.hm{display:none}main{padding:28px 18px 80px}h1{font-size:28px}.lead{font-size:15.5px}
+@media(max-width:700px){#finding{width:auto;flex:1 1 100%}.hm{display:none}main{padding:28px 18px 80px}h1{font-size:28px}.lead{font-size:15.5px}
  th[data-k=finding],td.fd{display:none}.f select,.f input[type=number]{flex:1 1 calc(50% - 4px);width:auto}
  header .here,header .sep{display:none}th{top:56px}}
 </style></head><body>
