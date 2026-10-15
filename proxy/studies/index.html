@@ -1,34 +1,52 @@
-<!doctype html><html lang="en"><head><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<!doctype html><html lang="en"><head><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><meta name="theme-color" content="#0f0f10"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Study Browser · Biohacking Wiki</title><link rel="icon" href="/favicon.ico">
 <style>
-:root{--g:#1f3b33;--c:#f6f1e4;--gold:#c9a227;--ink:#1b1b1b}
-*{box-sizing:border-box}body{margin:0;font:15px/1.45 system-ui,-apple-system,Segoe UI,sans-serif;background:var(--c);color:var(--ink)}
-header{background:var(--g);color:var(--c);padding:14px 20px;display:flex;align-items:center;gap:12px}
-header img{height:32px}header a{color:var(--c);text-decoration:none;font-weight:600}header .dot{width:8px;height:8px;border-radius:50%;background:var(--gold);display:inline-block}
-main{max-width:1150px;margin:0 auto;padding:16px}
-.disc{font-size:13px;color:#555;margin:0 0 12px}.disc a{color:var(--g)}
-#sample{display:none;background:#7a1f1f;color:#fff;padding:8px 12px;border-radius:6px;margin-bottom:12px;font-weight:600}
-.f{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}.f input,.f select{padding:6px 8px;border:1px solid #cfc6ae;border-radius:6px;background:#fff;font:inherit}
-#q{flex:1 1 260px}.f input[type=number]{width:90px}
-#meta{font-size:13px;color:#555;margin:6px 0}
-table{width:100%;border-collapse:collapse;background:#fff}th,td{padding:7px 8px;border-bottom:1px solid #eee7d6;text-align:left;vertical-align:top}
-th{background:var(--g);color:var(--c);cursor:pointer;user-select:none;position:sticky;top:0;font-weight:600}
-td.s{font-weight:700;color:var(--g);white-space:nowrap}.r{font-size:12px;color:#666}
-#pg{display:flex;gap:8px;align-items:center;margin:12px 0}button{padding:6px 12px;border:0;border-radius:6px;background:var(--g);color:var(--c);cursor:pointer}button:disabled{opacity:.4}
-td.fd{font-size:13px;max-width:360px}#stats{font-size:12px}
-@media(max-width:700px){.hm{display:none}}
-
-/* dark theme to match the wiki */
-body{background:#111;color:#e6e6e3;font-family:Inter,system-ui,sans-serif}
-header{background:#111;color:#e6e6e3;border-bottom:1px solid #262626}header a{color:#e6e6e3}header .dot{background:#555}
-.disc,#meta,.r{color:#8a8a86}.disc a,td a,a{color:#c9c3a8;text-decoration-color:#4a4739;text-underline-offset:3px}
-.f input,.f select{background:#161616;color:#e6e6e3;border:1px solid #2c2c2c}
-table{background:transparent}th,td{border-bottom:1px solid #222}th{background:#161616;color:#e6e6e3}
-td.s{color:#e6e6e3}button{background:#222;color:#e6e6e3;border:1px solid #333}
+:root{--bg:#0f0f10;--bg2:#161618;--line:#232326;--line2:#2c2c30;--ink:#ececec;--ink2:#b4b4b4;--mute:#9a9a9a;--faint:#6b6b6b;--accent:#d9c7a0;--accent-u:rgba(217,199,160,.35)}
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.55 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:#d8d8d8;-webkit-font-smoothing:antialiased}
+header{height:56px;display:flex;align-items:center;gap:10px;padding:0 20px;border-bottom:1px solid var(--line);background:var(--bg);position:sticky;top:0;z-index:5}
+header img{width:22px;height:22px;border-radius:5px}
+header a{color:var(--ink);text-decoration:none;font-weight:600;font-size:14.5px;letter-spacing:-.01em}
+header .sep{color:var(--faint)}header .here{color:var(--mute);font-size:14px}
+header .back{margin-left:auto;font-weight:400;font-size:13.5px;color:var(--mute)}header .back:hover{color:var(--ink)}
+main{max-width:1120px;margin:0 auto;padding:48px 32px 96px}
+h1{font-size:34px;line-height:1.2;font-weight:650;letter-spacing:-.022em;color:var(--ink);margin:0 0 10px}
+.lead{font-size:17px;color:var(--ink2);margin:0 0 6px;max-width:680px}
+.disc{font-size:13px;line-height:1.55;color:var(--faint);margin:0 0 6px;max-width:780px}
+a{color:var(--accent);text-decoration:underline;text-decoration-color:var(--accent-u);text-decoration-thickness:1px;text-underline-offset:3px}
+a:hover{color:#efe0bd;text-decoration-color:currentColor}
+.disc a{color:var(--ink2)}
+#sample{display:none;background:#2a1414;color:#f0c8c8;border:1px solid #4a2222;padding:8px 12px;border-radius:8px;margin-bottom:12px;font-size:13.5px}
+.f{display:flex;flex-wrap:wrap;gap:8px;margin:28px 0 14px}
+.f input,.f select{height:36px;padding:0 12px;border:1px solid var(--line2);border-radius:8px;background:var(--bg2);color:var(--ink);font:inherit;font-size:13.5px;outline:none;transition:border-color .15s}
+.f select{appearance:none;-webkit-appearance:none;padding-right:30px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236b6b6b' fill='none' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center}
+.f input:focus,.f select:focus{border-color:#45454b}
+.f input::placeholder{color:var(--faint)}
+#q{flex:1 1 100%}.f input[type=number]{width:96px}
+#meta{font-size:12.5px;color:var(--faint);margin:0 0 6px}
+#stats{font-size:12.5px}
+table{width:100%;border-collapse:collapse;font-size:14px;line-height:1.5}
+th,td{padding:12px 16px 12px 0;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{position:sticky;top:56px;background:var(--bg);color:var(--faint);font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--line2);cursor:pointer;user-select:none;padding-top:10px;padding-bottom:10px}
+th:hover{color:var(--ink2)}
+tbody tr:hover td{background:rgba(255,255,255,.015)}
+td.s{font-weight:600;color:var(--ink);white-space:nowrap;font-variant-numeric:tabular-nums}
+td a{color:var(--ink);text-decoration:none;font-weight:500}td a:hover{color:var(--accent)}
+.r{font-size:12px;color:var(--faint);margin-top:3px}
+td.fd{font-size:13px;color:var(--mute);max-width:380px}
+td.hm{color:var(--mute);font-size:13px}
+#pg{display:flex;gap:10px;align-items:center;margin:20px 0;font-size:13px;color:var(--mute)}
+button{height:32px;padding:0 14px;border:1px solid var(--line2);border-radius:8px;background:var(--bg2);color:var(--ink);font:inherit;font-size:13px;cursor:pointer}
+button:hover{border-color:#45454b}button:disabled{opacity:.35;cursor:default}
+@media(max-width:700px){.hm{display:none}main{padding:28px 18px 80px}h1{font-size:28px}.lead{font-size:15.5px}
+ th[data-k=finding],td.fd{display:none}.f select,.f input[type=number]{flex:1 1 calc(50% - 4px);width:auto}
+ header .here,header .sep{display:none}th{top:56px}}
 </style></head><body>
-<header><img src="logo.svg" alt=""><a href="/">Biohacking Wiki</a><span class="dot"></span><span>Study Browser</span></header>
+<header><img src="/brand/mark.svg" alt=""><a href="/">Biohacking Wiki</a><span class="sep">/</span><span class="here">Study browser</span><a class="back" href="/">Back to the wiki</a></header>
 <main>
-<p class="disc">For information only, not medical advice. See the <a href="/s/about-the-wiki/doc/disclaimer-oi5wQnt98S">disclaimer</a>. How scores work: <a id="scoreLink" href="/s/about-the-wiki/doc/study-scores-JB8uyQtefc">Study Scores</a>.</p>
+<h1>Study browser</h1>
+<p class="lead">Every scored study behind the wiki's articles, in one searchable list.</p>
+<p class="disc">For information only, not medical advice. See the <a href="/about/disclaimer">disclaimer</a>. How scores work: <a id="scoreLink" href="/about/study-scores">Study Scores</a>.</p>
 <p id="def" class="disc"></p><p id="stats" class="disc"></p>
 <div class="f">
 <input id="q" type="search" placeholder="Search title, author, journal, finding…">
