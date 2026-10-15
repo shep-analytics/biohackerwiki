@@ -3,7 +3,7 @@
 	auto_https off
 	servers {
 		# Only Railway's edge can reach this service; trust its X-Forwarded-* headers
-		# so the real client IP / proto pass through to Outline (magic links are IP-bound).
+		# so the real client IP / proto pass through to the wiki.
 		trusted_proxies static 0.0.0.0/0 ::/0
 		client_ip_headers X-Forwarded-For
 	}
@@ -21,14 +21,100 @@
 	@www host www.biohackerwiki.com
 	redir @www https://biohackerwiki.com{uri} 301
 
-	# Logged-out visitors hitting the bare home page go to the public wiki.
-	@home_anon {
-		path /
-		not header_regexp Cookie (^|;\s*)accessToken=
+	# Old Outline URLs -> Wiki.js paths (generated from the Outline export)
+	map {path} {legacy} {
+		/s/about-the-wiki/doc/article-template-AkYgRrnhyY /about/article-template
+		/doc/article-template-AkYgRrnhyY /about/article-template
+		/s/about-the-wiki/doc/disclaimer-oi5wQnt98S /about/disclaimer
+		/doc/disclaimer-oi5wQnt98S /about/disclaimer
+		/s/about-the-wiki/doc/evidence-levels-EXcemtrrLh /about/evidence-levels
+		/doc/evidence-levels-EXcemtrrLh /about/evidence-levels
+		/s/about-the-wiki/doc/how-to-contribute-SdDhvfxytl /about/how-to-contribute
+		/doc/how-to-contribute-SdDhvfxytl /about/how-to-contribute
+		/s/about-the-wiki/doc/study-scores-JB8uyQtefc /about/study-scores
+		/doc/study-scores-JB8uyQtefc /about/study-scores
+		/s/lifestyle-protocols/doc/cold-water-immersion-JPsH8Jiobp /lifestyle-protocols/cold-water-immersion
+		/doc/cold-water-immersion-JPsH8Jiobp /lifestyle-protocols/cold-water-immersion
+		/s/lifestyle-protocols/doc/studies-cold-water-immersion-QNTWf0KzNM /lifestyle-protocols/cold-water-immersion/studies
+		/doc/studies-cold-water-immersion-QNTWf0KzNM /lifestyle-protocols/cold-water-immersion/studies
+		/s/lifestyle-protocols/doc/sauna-bathing-R5JpUcOXzS /lifestyle-protocols/sauna-bathing
+		/doc/sauna-bathing-R5JpUcOXzS /lifestyle-protocols/sauna-bathing
+		/s/lifestyle-protocols/doc/studies-sauna-bathing-dV9ZqlE6Jz /lifestyle-protocols/sauna-bathing/studies
+		/doc/studies-sauna-bathing-dV9ZqlE6Jz /lifestyle-protocols/sauna-bathing/studies
+		/s/lifestyle-protocols/doc/time-restricted-eating-tro7xvf2dJ /lifestyle-protocols/time-restricted-eating
+		/doc/time-restricted-eating-tro7xvf2dJ /lifestyle-protocols/time-restricted-eating
+		/s/lifestyle-protocols/doc/studies-time-restricted-eating-qe2S5sCpbn /lifestyle-protocols/time-restricted-eating/studies
+		/doc/studies-time-restricted-eating-qe2S5sCpbn /lifestyle-protocols/time-restricted-eating/studies
+		/s/nootropics/doc/caffeine-and-l-theanine-ZCYFmuzTKO /nootropics/caffeine-and-l-theanine
+		/doc/caffeine-and-l-theanine-ZCYFmuzTKO /nootropics/caffeine-and-l-theanine
+		/s/nootropics/doc/studies-caffeine-and-l-theanine-xBrvgrmHZr /nootropics/caffeine-and-l-theanine/studies
+		/doc/studies-caffeine-and-l-theanine-xBrvgrmHZr /nootropics/caffeine-and-l-theanine/studies
+		/s/nootropics/doc/rhodiola-rosea-8JmO322N6E /nootropics/rhodiola-rosea
+		/doc/rhodiola-rosea-8JmO322N6E /nootropics/rhodiola-rosea
+		/s/nootropics/doc/studies-rhodiola-rosea-aTO1rMrD7a /nootropics/rhodiola-rosea/studies
+		/doc/studies-rhodiola-rosea-aTO1rMrD7a /nootropics/rhodiola-rosea/studies
+		/s/peptides-research-compounds/doc/about-this-section-HHw4jaZcXQ /peptides-research-compounds
+		/doc/about-this-section-HHw4jaZcXQ /peptides-research-compounds
+		/s/peptides-research-compounds/doc/bpc-157-frM2BmJ8he /peptides-research-compounds/bpc-157
+		/doc/bpc-157-frM2BmJ8he /peptides-research-compounds/bpc-157
+		/s/peptides-research-compounds/doc/studies-bpc-157-28v04W7rdf /peptides-research-compounds/bpc-157/studies
+		/doc/studies-bpc-157-28v04W7rdf /peptides-research-compounds/bpc-157/studies
+		/s/prescription-drugs/doc/about-this-section-0GTatREy6k /prescription-drugs
+		/doc/about-this-section-0GTatREy6k /prescription-drugs
+		/s/prescription-drugs/doc/metformin-OAF2U4uTrE /prescription-drugs/metformin
+		/doc/metformin-OAF2U4uTrE /prescription-drugs/metformin
+		/s/prescription-drugs/doc/studies-metformin-v6yIId2C7J /prescription-drugs/metformin/studies
+		/doc/studies-metformin-v6yIId2C7J /prescription-drugs/metformin/studies
+		/s/prescription-drugs/doc/rapamycin-sirolimus-BgxmfO9vK9 /prescription-drugs/rapamycin
+		/doc/rapamycin-sirolimus-BgxmfO9vK9 /prescription-drugs/rapamycin
+		/s/prescription-drugs/doc/studies-rapamycin-sirolimus-9ROau2duqR /prescription-drugs/rapamycin/studies
+		/doc/studies-rapamycin-sirolimus-9ROau2duqR /prescription-drugs/rapamycin/studies
+		/s/prescription-drugs/doc/semaglutide-m4H52Ft65m /prescription-drugs/semaglutide
+		/doc/semaglutide-m4H52Ft65m /prescription-drugs/semaglutide
+		/s/prescription-drugs/doc/studies-semaglutide-c6TD29luae /prescription-drugs/semaglutide/studies
+		/doc/studies-semaglutide-c6TD29luae /prescription-drugs/semaglutide/studies
+		/s/sleep-circadian/doc/melatonin-296vHBv1gq /sleep-circadian/melatonin
+		/doc/melatonin-296vHBv1gq /sleep-circadian/melatonin
+		/s/sleep-circadian/doc/studies-melatonin-ZNaPAmwj7e /sleep-circadian/melatonin/studies
+		/doc/studies-melatonin-ZNaPAmwj7e /sleep-circadian/melatonin/studies
+		/s/sleep-circadian/doc/morning-light-exposure-kT8S9Xy44t /sleep-circadian/morning-light-exposure
+		/doc/morning-light-exposure-kT8S9Xy44t /sleep-circadian/morning-light-exposure
+		/s/sleep-circadian/doc/studies-morning-light-exposure-2Zjvh70mGg /sleep-circadian/morning-light-exposure/studies
+		/doc/studies-morning-light-exposure-2Zjvh70mGg /sleep-circadian/morning-light-exposure/studies
+		/s/supplements/doc/ashwagandha-lgTwm8UeuT /supplements/ashwagandha
+		/doc/ashwagandha-lgTwm8UeuT /supplements/ashwagandha
+		/s/supplements/doc/studies-ashwagandha-fj8akthK3f /supplements/ashwagandha/studies
+		/doc/studies-ashwagandha-fj8akthK3f /supplements/ashwagandha/studies
+		/s/supplements/doc/creatine-KV6RNhZuqn /supplements/creatine
+		/doc/creatine-KV6RNhZuqn /supplements/creatine
+		/s/supplements/doc/studies-creatine-iLZvbKDkPB /supplements/creatine/studies
+		/doc/studies-creatine-iLZvbKDkPB /supplements/creatine/studies
+		/s/supplements/doc/magnesium-fWQay6GKaa /supplements/magnesium
+		/doc/magnesium-fWQay6GKaa /supplements/magnesium
+		/s/supplements/doc/studies-magnesium-dcMeih0oVM /supplements/magnesium/studies
+		/doc/studies-magnesium-dcMeih0oVM /supplements/magnesium/studies
+		/s/supplements/doc/omega-3-fatty-acids-iRZSpKqVp1 /supplements/omega-3-fatty-acids
+		/doc/omega-3-fatty-acids-iRZSpKqVp1 /supplements/omega-3-fatty-acids
+		/s/supplements/doc/studies-omega-3-fatty-acids-KvQSMf6az5 /supplements/omega-3-fatty-acids/studies
+		/doc/studies-omega-3-fatty-acids-KvQSMf6az5 /supplements/omega-3-fatty-acids/studies
+		/s/supplements/doc/vitamin-d-4eMQYiLk6t /supplements/vitamin-d
+		/doc/vitamin-d-4eMQYiLk6t /supplements/vitamin-d
+		/s/supplements/doc/studies-vitamin-d-HUR7KmKSSK /supplements/vitamin-d/studies
+		/doc/studies-vitamin-d-HUR7KmKSSK /supplements/vitamin-d/studies
+		/s/about-the-wiki /
+		/s/supplements /#supplements
+		/s/nootropics /#nootropics
+		/s/sleep-circadian /#sleep-circadian
+		/s/lifestyle-protocols /#lifestyle-protocols
+		/s/peptides-research-compounds /peptides-research-compounds
+		/s/prescription-drugs /prescription-drugs
+		default ""
 	}
-	redir @home_anon /s/about-the-wiki 302
+	@legacy expression `{legacy} != ""`
+	redir @legacy {legacy} 301
 
-	# Static study browser (served here, never proxied to Outline)
+
+	# Static study browser (served here, never proxied to the wiki)
 	redir /studies /studies/ 308
 	handle_path /studies/* {
 		root * /srv/studies
@@ -37,6 +123,14 @@
 	}
 
 	# Brand icons
+	handle_path /brand/* {
+		import brand
+	}
+	@wjfav path /_assets/favicons/*
+	handle @wjfav {
+		rewrite * /mark-192.png
+		import brand
+	}
 	handle /favicon.ico {
 		rewrite * /favicon.ico
 		import brand
@@ -73,8 +167,8 @@
 	}
 
 	handle {
-		reverse_proxy {$UPSTREAM:outline.railway.internal:3000} {
-			# Preserve Host, X-Forwarded-Proto (Outline FORCE_HTTPS) and the client IP.
+		reverse_proxy {$UPSTREAM:wikijs.railway.internal:3000} {
+			# Preserve Host, X-Forwarded-Proto (Wiki.js) and the client IP.
 			header_up Host {host}
 			flush_interval -1
 			transport http {
