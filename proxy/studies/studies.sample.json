@@ -1,0 +1,5 @@
+[
+{"topic":"creatine","pmid":"","title":"SAMPLE ROW – placeholder, not a real study","first_author":"Sample","year":2019,"journal":"Sample Journal","design":"Meta-analysis","n":1200,"score":5,"score_reason":"Placeholder text","finding":"positive","url":""},
+{"topic":"magnesium","pmid":"","title":"SAMPLE ROW – placeholder, not a real study","first_author":"Sample","year":2015,"journal":"Sample Journal","design":"RCT","n":80,"score":3,"score_reason":"Placeholder text","finding":"null","url":""},
+{"topic":"melatonin","pmid":"","title":"SAMPLE ROW – placeholder, not a real study","first_author":"Sample","year":2008,"journal":"Sample Journal","design":"Observational","n":400,"score":2,"score_reason":"Placeholder text","finding":"mixed","url":""}
+]

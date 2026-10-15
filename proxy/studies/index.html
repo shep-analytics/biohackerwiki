@@ -1,0 +1,62 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Study Browser · Biohacking Wiki</title><link rel="icon" href="/favicon.ico">
+<style>
+:root{--g:#1f3b33;--c:#f6f1e4;--gold:#c9a227;--ink:#1b1b1b}
+*{box-sizing:border-box}body{margin:0;font:15px/1.45 system-ui,-apple-system,Segoe UI,sans-serif;background:var(--c);color:var(--ink)}
+header{background:var(--g);color:var(--c);padding:14px 20px;display:flex;align-items:center;gap:12px}
+header img{height:32px}header a{color:var(--c);text-decoration:none;font-weight:600}header .dot{width:8px;height:8px;border-radius:50%;background:var(--gold);display:inline-block}
+main{max-width:1150px;margin:0 auto;padding:16px}
+.disc{font-size:13px;color:#555;margin:0 0 12px}.disc a{color:var(--g)}
+#sample{display:none;background:#7a1f1f;color:#fff;padding:8px 12px;border-radius:6px;margin-bottom:12px;font-weight:600}
+.f{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}.f input,.f select{padding:6px 8px;border:1px solid #cfc6ae;border-radius:6px;background:#fff;font:inherit}
+#q{flex:1 1 260px}.f input[type=number]{width:90px}
+#meta{font-size:13px;color:#555;margin:6px 0}
+table{width:100%;border-collapse:collapse;background:#fff}th,td{padding:7px 8px;border-bottom:1px solid #eee7d6;text-align:left;vertical-align:top}
+th{background:var(--g);color:var(--c);cursor:pointer;user-select:none;position:sticky;top:0;font-weight:600}
+td.s{font-weight:700;color:var(--g);white-space:nowrap}.r{font-size:12px;color:#666}
+#pg{display:flex;gap:8px;align-items:center;margin:12px 0}button{padding:6px 12px;border:0;border-radius:6px;background:var(--g);color:var(--c);cursor:pointer}button:disabled{opacity:.4}
+@media(max-width:700px){.hm{display:none}}
+</style></head><body>
+<header><img src="logo.svg" alt=""><a href="/">Biohacking Wiki</a><span class="dot"></span><span>Study Browser</span></header>
+<main>
+<p class="disc">For information only, not medical advice. See the <a href="/s/about-the-wiki/doc/disclaimer-oi5wQnt98S">disclaimer</a>. How scores work: <a id="scoreLink" href="/s/about-the-wiki/doc/evidence-levels-EXcemtrrLh">Study Scores</a>.</p>
+<div id="sample">SAMPLE DATA: placeholder rows only, not real studies.</div>
+<div class="f">
+<input id="q" type="search" placeholder="Search title, author, journal, finding…">
+<select id="topic"><option value="">All topics</option></select>
+<select id="design"><option value="">All designs</option></select>
+<select id="finding"><option value="">Any finding</option></select>
+<select id="min"><option value="">Min score</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+<input id="from" type="number" placeholder="From yr"><input id="to" type="number" placeholder="To yr">
+<select id="sort"><option value="score">Sort: score</option><option value="year">Sort: year</option><option value="n">Sort: sample size</option><option value="title">Sort: title</option></select>
+</div>
+<div id="meta"></div>
+<table><thead><tr><th data-k="score">Score</th><th data-k="title">Study</th><th data-k="topic" class="hm">Topic</th><th data-k="design" class="hm">Design</th><th data-k="n" class="hm">n</th><th data-k="year">Year</th><th data-k="finding">Finding</th></tr></thead><tbody id="tb"></tbody></table>
+<div id="pg"><button id="prev">Prev</button><span id="pi"></span><button id="next">Next</button></div>
+</main>
+<script>
+const PER=100,$=id=>document.getElementById(id),F=['q','topic','design','finding','min','from','to','sort'];
+let all=[],rows=[],page=0,dir=-1;
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+async function load(){let r=await fetch('studies.json',{cache:'no-cache'}),sample=false;
+ if(!r.ok){r=await fetch('studies.sample.json');sample=true}
+ all=await r.json();if(sample)$('sample').style.display='block';
+ all.forEach(s=>s._t=[s.title,s.first_author,s.journal,s.topic,s.design,s.finding,s.score_reason,s.pmid].join(' ').toLowerCase());
+ for(const k of['topic','design','finding'])[...new Set(all.map(s=>s[k]).filter(Boolean))].sort().forEach(v=>$(k).add(new Option(v,v)));
+ const p=new URLSearchParams(location.search);F.forEach(k=>{if(p.has(k))$(k).value=p.get(k)});if(p.has('dir'))dir=+p.get('dir');page=+(p.get('page')||1)-1;
+ apply(false)}
+function apply(reset=true){if(reset)page=0;const v=Object.fromEntries(F.map(k=>[k,$(k).value.trim()]));
+ const terms=v.q.toLowerCase().split(/\s+/).filter(Boolean),min=+v.min||0,from=+v.from||0,to=+v.to||1e4;
+ rows=all.filter(s=>(!v.topic||s.topic==v.topic)&&(!v.design||s.design==v.design)&&(!v.finding||s.finding==v.finding)&&(+s.score||0)>=min&&(+s.year||0)>=from&&(+s.year||0)<=to&&terms.every(t=>s._t.includes(t)));
+ const k=v.sort;rows.sort((a,b)=>{const x=a[k],y=b[k];return (typeof x=='number'&&typeof y=='number'?x-y:String(x??'').localeCompare(String(y??'')))*dir});
+ const p=new URLSearchParams();F.forEach(k=>{if(v[k]&&!(k=='sort'&&v[k]=='score'))p.set(k,v[k])});if(dir!=-1)p.set('dir',dir);if(page)p.set('page',page+1);
+ history.replaceState(null,'',location.pathname+(p+''?'?'+p:''));render()}
+function render(){const pages=Math.max(1,Math.ceil(rows.length/PER));page=Math.min(page,pages-1);
+ $('tb').innerHTML=rows.slice(page*PER,page*PER+PER).map(s=>{const link=s.url||(s.pmid?'https://pubmed.ncbi.nlm.nih.gov/'+s.pmid+'/':'');
+ return `<tr><td class="s" title="${esc(s.score_reason)}">${esc(s.score)}/5</td><td>${link?`<a href="${esc(link)}" target="_blank" rel="noopener">${esc(s.title)}</a>`:esc(s.title)}<div class="r">${esc(s.first_author)} · ${esc(s.journal)}${s.pmid?' · PMID '+esc(s.pmid):''}</div>${s.score_reason?`<div class="r">${esc(s.score_reason)}</div>`:''}</td><td class="hm">${esc(s.topic)}</td><td class="hm">${esc(s.design)}</td><td class="hm">${esc(s.n)}</td><td>${esc(s.year)}</td><td>${esc(s.finding)}</td></tr>`}).join('');
+ $('meta').textContent=`${rows.length.toLocaleString()} of ${all.length.toLocaleString()} studies`;$('pi').textContent=`Page ${page+1} of ${pages}`;$('prev').disabled=page==0;$('next').disabled=page>=pages-1}
+let t;$('q').oninput=()=>{clearTimeout(t);t=setTimeout(apply,120)};F.slice(1).forEach(k=>$(k).onchange=()=>apply());
+document.querySelectorAll('th').forEach(th=>th.onclick=()=>{const k=th.dataset.k;if($('sort').querySelector(`option[value=${k}]`)){if($('sort').value==k)dir=-dir;else{ $('sort').value=k;dir=-1}}else{dir=-dir}apply()});
+$('prev').onclick=()=>{page--;apply(false);scrollTo(0,0)};$('next').onclick=()=>{page++;apply(false);scrollTo(0,0)};
+load();
+</script></body></html>
