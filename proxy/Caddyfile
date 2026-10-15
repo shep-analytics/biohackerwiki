@@ -16,6 +16,10 @@
 }
 
 :{$PORT:8080} {
+	# www -> apex
+	@www host www.biohackerwiki.com
+	redir @www https://biohackerwiki.com{uri} 301
+
 	# Logged-out visitors hitting the bare home page go to the public wiki.
 	@home_anon {
 		path /
