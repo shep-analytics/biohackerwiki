@@ -45,8 +45,8 @@ button:hover{border-color:#45454b}button:disabled{opacity:.35;cursor:default}
 <header><img src="/brand/mark.svg" alt=""><a href="/">Biohacker Wiki</a><span class="sep">/</span><span class="here">Study browser</span><a class="back" href="/">Back to the wiki</a></header>
 <main>
 <h1>Study browser</h1>
-<p class="lead">Every scored study behind the wiki's articles, in one searchable list.</p>
-<p class="disc">For information only, not medical advice. See the <a href="/about/disclaimer">disclaimer</a>. How scores work: <a id="scoreLink" href="/about/study-scores">Study Scores</a>.</p>
+<p class="lead">Human trials and reviews from PubMed for the wiki's 16 topics. Each is scored 1 to 5 for study design.</p>
+<p class="disc">For information only, not medical advice. See the <a href="/about/disclaimer">disclaimer</a>. The scoring rules are on <a id="scoreLink" href="/about/study-scores">Study Scores</a>.</p>
 <p id="def" class="disc"></p><p id="stats" class="disc"></p>
 <div class="f">
 <input id="q" type="search" placeholder="Search title, author, journal, finding…">
@@ -82,6 +82,7 @@ function apply(reset=true){if(reset)page=0;const v=Object.fromEntries(F.map(k=>[
 function render(){const pages=Math.max(1,Math.ceil(rows.length/PER));page=Math.min(page,pages-1);
  $('tb').innerHTML=rows.slice(page*PER,page*PER+PER).map(s=>{const link=s.url||(s.pmid?'https://pubmed.ncbi.nlm.nih.gov/'+s.pmid+'/':'');
  return `<tr><td class="s" title="${esc(s.score_reason)}">${esc(s.score)}/5</td><td>${link?`<a href="${esc(link)}" target="_blank" rel="noopener">${esc(s.title)}</a>`:esc(s.title)}<div class="r">${esc(s.first_author)} · ${esc(s.journal)}${s.pmid?' · PMID '+esc(s.pmid):''}</div>${s.score_reason?`<div class="r">Score basis: ${esc(s.score_reason)}</div>`:''}</td><td class="hm">${esc(s.topic)}</td><td class="hm">${esc(s.design)}</td><td class="hm">${esc(s.design_n||s.n)}</td><td>${esc(s.year)}</td><td class="fd">${esc(s.finding)}</td></tr>`}).join('');
+ if(!rows.length)$('tb').innerHTML='<tr><td colspan="7" class="r">No studies match these filters.</td></tr>';
  $('meta').textContent=`${rows.length.toLocaleString()} of ${all.length.toLocaleString()} studies`;$('pi').textContent=`Page ${page+1} of ${pages}`;$('prev').disabled=page==0;$('next').disabled=page>=pages-1}
 let t;$('q').oninput=()=>{clearTimeout(t);t=setTimeout(apply,120)};F.slice(1).forEach(k=>$(k).onchange=()=>apply());
 document.querySelectorAll('th').forEach(th=>th.onclick=()=>{const k=th.dataset.k;if($('sort').querySelector(`option[value=${k}]`)){if($('sort').value==k)dir=-dir;else{ $('sort').value=k;dir=-1}}else{dir=-dir}apply()});
