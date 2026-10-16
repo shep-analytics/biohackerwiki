@@ -1,4 +1,4 @@
-# Biohacking Wiki
+# Biohacker Wiki
 
 An open-source, community-driven knowledge base for biohacking, nootropics, supplements, and self-optimization.
 

@@ -1,4 +1,4 @@
-# Contributing to Biohacking Wiki
+# Contributing to Biohacker Wiki
 
 Thank you for helping build this community resource! This guide covers how to contribute effectively.
 

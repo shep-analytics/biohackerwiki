@@ -1,4 +1,4 @@
-# Biohacking Wiki Governance
+# Biohacker Wiki Governance
 
 ## Mission
 
