@@ -130,6 +130,21 @@
 	handle_path /brand/* {
 		import brand
 	}
+	@wjfav16 path /_assets/favicons/favicon-16x16.png
+	handle @wjfav16 {
+		rewrite * /mark-16.png
+		import brand
+	}
+	@wjfav32 path /_assets/favicons/favicon-32x32.png
+	handle @wjfav32 {
+		rewrite * /mark-32.png
+		import brand
+	}
+	@wjapple path /_assets/favicons/apple-touch-icon.png
+	handle @wjapple {
+		rewrite * /mark-180.png
+		import brand
+	}
 	@wjfav path /_assets/favicons/*
 	handle @wjfav {
 		rewrite * /mark-192.png
