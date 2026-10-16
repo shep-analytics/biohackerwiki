@@ -53,12 +53,12 @@
 		/doc/rhodiola-rosea-8JmO322N6E /nootropics/rhodiola-rosea
 		/s/nootropics/doc/studies-rhodiola-rosea-aTO1rMrD7a /nootropics/rhodiola-rosea/studies
 		/doc/studies-rhodiola-rosea-aTO1rMrD7a /nootropics/rhodiola-rosea/studies
-		/s/peptides-research-compounds/doc/about-this-section-HHw4jaZcXQ /peptides-research-compounds
-		/doc/about-this-section-HHw4jaZcXQ /peptides-research-compounds
-		/s/peptides-research-compounds/doc/bpc-157-frM2BmJ8he /peptides-research-compounds/bpc-157
-		/doc/bpc-157-frM2BmJ8he /peptides-research-compounds/bpc-157
-		/s/peptides-research-compounds/doc/studies-bpc-157-28v04W7rdf /peptides-research-compounds/bpc-157/studies
-		/doc/studies-bpc-157-28v04W7rdf /peptides-research-compounds/bpc-157/studies
+		/s/peptides-research-compounds/doc/about-this-section-HHw4jaZcXQ /research-peptides-compounds
+		/doc/about-this-section-HHw4jaZcXQ /research-peptides-compounds
+		/s/peptides-research-compounds/doc/bpc-157-frM2BmJ8he /research-peptides-compounds/bpc-157
+		/doc/bpc-157-frM2BmJ8he /research-peptides-compounds/bpc-157
+		/s/peptides-research-compounds/doc/studies-bpc-157-28v04W7rdf /research-peptides-compounds/bpc-157/studies
+		/doc/studies-bpc-157-28v04W7rdf /research-peptides-compounds/bpc-157/studies
 		/s/prescription-drugs/doc/about-this-section-0GTatREy6k /prescription-drugs
 		/doc/about-this-section-0GTatREy6k /prescription-drugs
 		/s/prescription-drugs/doc/metformin-OAF2U4uTrE /prescription-drugs/metformin
@@ -106,12 +106,16 @@
 		/s/nootropics /#nootropics
 		/s/sleep-circadian /#sleep-circadian
 		/s/lifestyle-protocols /#lifestyle-protocols
-		/s/peptides-research-compounds /peptides-research-compounds
+		/s/peptides-research-compounds /research-peptides-compounds
 		/s/prescription-drugs /prescription-drugs
 		default ""
 	}
 	@legacy expression `{legacy} != ""`
 	redir @legacy {legacy} 301
+
+	# Section renamed: Peptides & Research Compounds -> Research Peptides & Compounds
+	@oldpep path_regexp oldpep ^/peptides-research-compounds(/.*)?$
+	redir @oldpep /research-peptides-compounds{re.oldpep.1} 301
 
 
 	# Static study browser (served here, never proxied to the wiki)
