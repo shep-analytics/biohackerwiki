@@ -118,6 +118,23 @@
 	redir @oldpep /research-peptides-compounds{re.oldpep.1} 301
 
 
+	# Sitemap for search engines
+	handle /sitemap.xml {
+		root * /srv/seo
+		header Content-Type "application/xml; charset=utf-8"
+		header Cache-Control "public, max-age=3600"
+		file_server
+	}
+
+	# First-party Umami analytics: only the tracker script and the event endpoint
+	@stats path /stats/script.js /stats/api/send
+	handle @stats {
+		uri strip_prefix /stats
+		reverse_proxy umami.railway.internal:3000 {
+			header_up Host umami-production-9e08.up.railway.app
+		}
+	}
+
 	# Static study browser (served here, never proxied to the wiki)
 	redir /studies /studies/ 308
 	handle_path /studies/* {
