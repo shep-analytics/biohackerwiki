@@ -102,10 +102,10 @@
 		/s/supplements/doc/studies-vitamin-d-HUR7KmKSSK /supplements/vitamin-d/studies
 		/doc/studies-vitamin-d-HUR7KmKSSK /supplements/vitamin-d/studies
 		/s/about-the-wiki /
-		/s/supplements /#supplements
-		/s/nootropics /#nootropics
-		/s/sleep-circadian /#sleep-circadian
-		/s/lifestyle-protocols /#lifestyle-protocols
+		/s/supplements /supplements
+		/s/nootropics /nootropics
+		/s/sleep-circadian /sleep-circadian
+		/s/lifestyle-protocols /lifestyle-protocols
 		/s/peptides-research-compounds /research-peptides-compounds
 		/s/prescription-drugs /prescription-drugs
 		default ""
@@ -201,6 +201,18 @@
 		rewrite * /manifest.webmanifest
 		import brand
 	}
+
+	# Tag listing pages: let crawlers follow links but keep them out of the index
+	@tags path /t /t/* /en/t /en/t/*
+	header @tags X-Robots-Tag "noindex, follow"
+
+	# Canonical URL for wiki pages (drop the /en locale prefix)
+	@enpath path_regexp enp ^/en(/.*)?$
+	header @enpath Link "<https://biohackerwiki.com{re.enp.1}>; rel=\"canonical\""
+	@wikipage {
+		not path /en /en/* /_assets/* /stats/* /brand/* /sitemap.xml /favicon.ico /images/* /graphql /login* /logout /a/* /e/* /h/* /s/* /i/* /p/* /u/* /t /t/* /register /healthz
+	}
+	header @wikipage Link "<https://biohackerwiki.com{path}>; rel=\"canonical\""
 
 	handle {
 		reverse_proxy {$UPSTREAM:wikijs.railway.internal:3000} {

@@ -88,4 +88,4 @@ let t;$('q').oninput=()=>{clearTimeout(t);t=setTimeout(apply,120)};F.slice(1).fo
 document.querySelectorAll('th').forEach(th=>th.onclick=()=>{const k=th.dataset.k;if($('sort').querySelector(`option[value=${k}]`)){if($('sort').value==k)dir=-dir;else{ $('sort').value=k;dir=-1}}else{dir=-dir}apply()});
 $('prev').onclick=()=>{page--;apply(false);scrollTo(0,0)};$('next').onclick=()=>{page++;apply(false);scrollTo(0,0)};
 load();
-</script></body></html>
+</script><p class="disc" style="text-align:center;margin:40px 0 24px">Research summaries, not medical advice. <a href="/about/disclaimer">Disclaimer</a> · <a href="/about/corrections">Corrections</a></p></body></html>
