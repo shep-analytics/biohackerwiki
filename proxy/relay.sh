@@ -34,6 +34,7 @@ q() {
 
 until q "
 CREATE TABLE IF NOT EXISTS bw_relay_sent(comment_id int primary key, sent_at timestamptz default now(), resend_id text);
+ALTER TABLE bw_relay_sent ADD COLUMN IF NOT EXISTS last_event text;
 CREATE TABLE IF NOT EXISTS bw_relay_state(k text primary key, v int);
 INSERT INTO bw_relay_state(k, v) SELECT 'watermark', coalesce(max(id), 0) FROM comments ON CONFLICT (k) DO NOTHING;
 " >/dev/null; do
@@ -81,6 +82,27 @@ send_one() {
 	log "sent comment $id resend $resend_id"
 }
 
+# status_one COMMENT_ID RESEND_ID: record Resend's last_event for one sent email.
+status_one() {
+	cid=$1
+	rid=$2
+	case $cid in ''|*[!0-9]*) return ;; esac
+	case $rid in ''|*[!A-Za-z0-9-]*) log "bad resend id comment $cid"; return ;; esac
+
+	code=$(printf 'Authorization: Bearer %s\n' "$key" | curl -sS --max-time 20 \
+		-o "$tmp/resp" -w '%{http_code}' \
+		-H @- "https://api.resend.com/emails/$rid" 2>/dev/null) || :
+	ev=$(jq -r '.last_event // empty' <"$tmp/resp" 2>/dev/null)
+	rm -f "$tmp/resp"
+	[ "$code" = 200 ] || { log "status failed comment $cid http ${code:-000}"; return; }
+	case $ev in ''|*[!A-Za-z_]*) return ;; esac
+
+	changed=$(q "UPDATE bw_relay_sent SET last_event = :'ev'
+WHERE comment_id = $cid AND last_event IS DISTINCT FROM :'ev' RETURNING comment_id" \
+		-v ev="$ev") || { log "status update failed comment $cid"; return; }
+	[ -n "$changed" ] && log "status comment $cid $ev"
+}
+
 run_once() {
 	key=$(q "SELECT value->>'pass' FROM settings WHERE key = 'mail'") || { log "settings query failed"; return; }
 	[ -n "$key" ] || { log "no Resend key in settings.mail.pass"; return; }
@@ -104,6 +126,19 @@ LIMIT 20") || { log "comments query failed"; return; }
 
 	q "UPDATE bw_relay_state SET v = s.m FROM (SELECT max(comment_id) AS m FROM bw_relay_sent) s
 WHERE k = 'watermark' AND s.m > v" >/dev/null || log "watermark update failed"
+
+	pending=$(q "
+SELECT comment_id, resend_id FROM bw_relay_sent
+WHERE resend_id IS NOT NULL AND sent_at > now() - interval '1 day'
+	AND (last_event IS NULL OR last_event IN ('sent', 'queued', 'scheduled', 'delivery_delayed'))
+ORDER BY comment_id
+LIMIT 5") || { log "status query failed"; return; }
+
+	if [ -n "$pending" ]; then
+		printf '%s\n' "$pending" | while IFS='|' read -r cid rid; do
+			status_one "$cid" "$rid"
+		done
+	fi
 }
 
 while :; do

@@ -25,7 +25,9 @@ When disabled it logs `relay disabled` and sleeps forever.
 
 ## Tables (created in the Wiki.js database on start)
 
-- `bw_relay_sent(comment_id, sent_at, resend_id)`: one row per comment emailed.
+- `bw_relay_sent(comment_id, sent_at, resend_id, last_event)`: one row per comment emailed.
+  `last_event` is Resend's delivery status (e.g. `delivered`, `bounced`), polled each loop for up to
+  5 emails from the last day that are still unset or in flight; changes log `status comment <id> <event>`.
 - `bw_relay_state(k, v)`: `watermark` row. Only comments with `id > watermark` are considered.
   On first start it is set to the current max comment id, so existing comments are never emailed.
   After each batch it moves up to the highest sent comment id.
