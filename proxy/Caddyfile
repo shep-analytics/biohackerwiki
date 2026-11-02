@@ -11,7 +11,7 @@
 
 (brand) {
 	root * /srv/brand
-	header Cache-Control "public, max-age=86400"
+	header Cache-Control "public, max-age=3600, must-revalidate"
 	file_server
 }
 
