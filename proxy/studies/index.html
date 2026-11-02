@@ -45,7 +45,7 @@ button:hover{border-color:#45454b}button:disabled{opacity:.35;cursor:default}
 <header><img src="/brand/mark.svg" alt=""><a href="/">Biohacker Wiki</a><span class="sep">/</span><span class="here">Study browser</span><a class="back" href="/">Back to the wiki</a></header>
 <main>
 <h1>Study browser</h1>
-<p class="lead">Human trials and reviews from PubMed for the wiki's 16 topics. Each is scored 1 to 5 for study design.</p>
+<p class="lead">Human trials and reviews from PubMed for <span id="ntopics">16</span> of the wiki's topics. Each is scored 1 to 5 for study design.</p>
 <p class="disc">For information only, not medical advice. See the <a href="/about/disclaimer">disclaimer</a>. The scoring rules are on <a id="scoreLink" href="/about/study-scores">Study Scores</a>.</p>
 <p id="def" class="disc"></p><p id="stats" class="disc"></p>
 <div class="f">
@@ -65,7 +65,7 @@ button:hover{border-color:#45454b}button:disabled{opacity:.35;cursor:default}
 const PER=100,$=id=>document.getElementById(id),F=['q','topic','design','finding','min','from','to','sort'];
 let all=[],rows=[],page=0,dir=-1;
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-let D={};async function load(){$('meta').textContent='Loading studies…';D=await (await fetch('studies.json',{cache:'no-cache'})).json();all=D.studies;
+let D={};async function load(){$('meta').textContent='Loading studies…';D=await (await fetch('studies.json',{cache:'no-cache'})).json();const nt=Object.keys(D.stats||{}).length;if(nt>0)$('ntopics').textContent=nt;all=D.studies;
  $('def').textContent='Included: '+(D.definition||'')+(D.generated?' Updated '+D.generated+'.':'');
  all.forEach(s=>{s.year=+s.year||null;s.n=s.n==null?null:+s.n});
  all.forEach(s=>s._t=[s.title,s.first_author,s.journal,s.topic,s.design,s.finding,s.score_reason,s.pmid].join(' ').toLowerCase());
