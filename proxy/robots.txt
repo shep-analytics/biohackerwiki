@@ -1,0 +1,15 @@
+User-agent: *
+# Wiki.js admin, editor, history, source, page-id, login and API paths
+Disallow: /a/
+Disallow: /e/
+Disallow: /h/
+Disallow: /i/
+Disallow: /p/
+Disallow: /s/
+Disallow: /login
+Disallow: /logout
+Disallow: /register
+Disallow: /verify
+Disallow: /graphql
+
+Sitemap: https://biohackerwiki.com/sitemap.xml

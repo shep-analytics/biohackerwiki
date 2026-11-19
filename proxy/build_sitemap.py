@@ -35,6 +35,18 @@ def day(iso: str | None) -> str:
     return datetime.fromisoformat(t).date().isoformat()
 
 
+def clean_path(path: str) -> str:
+    """Wiki.js path without slashes or the "en" locale prefix.
+
+    The proxy 301s /en/* to /*, so an /en/ URL in the sitemap would only
+    ever be a redirect.
+    """
+    path = path.strip("/")
+    if path == "en" or path.startswith("en/"):
+        path = path[3:]
+    return path
+
+
 def loc_for(path: str) -> str:
     if path in ("", "home"):
         return f"{HOME}/"
@@ -57,7 +69,7 @@ def entries(pages: list[dict]) -> list[tuple[str, str]]:
     for p in pages:
         if not p.get("isPublished") or p.get("isPrivate"):
             continue
-        path = (p.get("path") or "").strip("/")
+        path = clean_path(p.get("path") or "")
         if not path or path == "home" or path in EXCLUDE_PATHS:
             continue
         add(loc_for(path), day(p.get("updatedAt")))
