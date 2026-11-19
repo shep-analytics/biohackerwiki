@@ -1,7 +1,9 @@
 {
 	admin off
-	# replace-response (built into our image, see Dockerfile) has no default order
-	order replace after encode
+	# replace-response must run on uncompressed HTML; encode then compresses
+	# for the client. The module defaults to after encode, which would miss
+	# the title strings once gzip is applied.
+	order replace before encode
 	auto_https off
 	servers {
 		# Only Railway's edge can reach this service; trust its X-Forwarded-* headers
